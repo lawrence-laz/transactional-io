@@ -1,14 +1,11 @@
-using System;
-using System.IO;
-
 namespace Transactional.IO;
 
 ///
 public sealed class TransactionalFileStream : FileStream
 {
-    private string _tempFilePath;
-    private string _originalFilePath;
-    private FileStream _tempFileStream;
+    private readonly string _tempFilePath;
+    private readonly string _originalFilePath;
+    private readonly FileStream _tempFileStream;
     private bool _isCommitted;
     private bool _disposedValue;
     private string? _backupFilePath;
