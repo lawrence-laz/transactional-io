@@ -1,6 +1,10 @@
 namespace Transactional.IO;
 
-///
+/// <summary>
+/// Provides a <see cref="Stream"/> for a file, supporting read and write operations
+/// in a transactional manner. 
+/// The changes are only saved on dispose if <see cref="Commit"/> was called beforehand. 
+/// </summary>
 public sealed class TransactionalFileStream : FileStream
 {
     private readonly string _tempFilePath;
@@ -9,7 +13,10 @@ public sealed class TransactionalFileStream : FileStream
     private bool _isCommitted;
     private bool _disposedValue;
 
-    ///
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TransactionalFileStream"/>
+    /// class with the specified path and creation mode.
+    /// </summary>
     public TransactionalFileStream(string filePath, FileMode mode)
         : base(CreateTempCopy(filePath, out var tempFilePath), mode)
     {
@@ -74,7 +81,10 @@ public sealed class TransactionalFileStream : FileStream
         }
     }
 
-    ///
+    /// <summary>
+    /// Disposes the <see cref="TransactionalFileStream"/> and completes the 
+    /// underlying transaction either by saving changes, or rolling them back.
+    /// </summary>
     protected override void Dispose(bool disposing)
     {
         if (!_disposedValue)
