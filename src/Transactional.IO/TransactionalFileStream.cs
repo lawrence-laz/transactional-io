@@ -20,7 +20,7 @@ public sealed class TransactionalFileStream : FileStream
 
     private static string CreateTempCopy(string filePath, out string tempFilePath)
     {
-        tempFilePath = filePath + DateTime.Now.ToFileTime() + ".tmp";
+        tempFilePath = $"{filePath}.{Guid.NewGuid()}.tmp";
         File.Copy(filePath, tempFilePath);
         return tempFilePath;
     }
@@ -46,20 +46,26 @@ public sealed class TransactionalFileStream : FileStream
     {
         if (_isCommitted)
         {
-            var backupFilePath = _originalFilePath + DateTime.Now.ToFileTime() + ".original.tmp";
+            var backupFilePath = $"{_originalFilePath}.{Guid.NewGuid()}.original.tmp";
             try
             {
                 File.Move(_originalFilePath, backupFilePath);
                 File.Move(_tempFilePath, _originalFilePath);
                 File.Delete(backupFilePath);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 if (!File.Exists(_originalFilePath) && File.Exists(backupFilePath))
                 {
                     File.Move(backupFilePath, _originalFilePath);
                     File.Delete(backupFilePath);
                 }
+
+                throw new FileStreamCompleteTransactionException(
+                    $"Could not complete the trasaction for the" +
+                    $"{nameof(TransactionalFileStream)} for " +
+                    $"'{_originalFilePath}'. See inner exception for details.",
+                    exception);
             }
         }
         else

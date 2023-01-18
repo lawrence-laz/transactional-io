@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace Transactional.IO.Tests;
 
 public class TransactionalFileStreamTests
@@ -24,6 +26,39 @@ public class TransactionalFileStreamTests
             .Be(unmodifiedContent, "because .Commit() was not called");
         AssertThatTemporaryFilesWereCleanedUp(fileName);
     }
+
+    [Theory, AutoData]
+    public void TransactionalFileStream_recovers_if_temporary_files_get_corrupted(
+        string fileName,
+        string unmodifiedContent,
+        string modifiedContent)
+    {
+        // Arrange
+        File.WriteAllText(fileName, unmodifiedContent);
+        var act = new Action(() =>
+        {
+            using var fileStream = new TransactionalFileStream(fileName, FileMode.Truncate);
+            using var writer = new StreamWriter(fileStream);
+
+            writer.Write(modifiedContent);
+            writer.Flush();
+
+            var tempFileName = Directory
+                .GetFiles(Directory.GetCurrentDirectory(), $"{fileName}.*.tmp")
+                .First();
+            File.Delete(tempFileName);
+
+            fileStream.Commit();
+        });
+
+        // Act & Assert
+        act.Should().Throw<FileStreamCompleteTransactionException>();
+        File.ReadAllText(fileName)
+            .Should()
+            .Be(unmodifiedContent, "because transaction failed to complete");
+        AssertThatTemporaryFilesWereCleanedUp(fileName);
+    }
+
 
     [Theory, AutoData]
     public void TransactionalFileStream_does_modify_file_when_Commit_is_called(
