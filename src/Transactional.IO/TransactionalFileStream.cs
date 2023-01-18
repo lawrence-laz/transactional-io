@@ -8,7 +8,6 @@ public sealed class TransactionalFileStream : FileStream
     private readonly FileStream _tempFileStream;
     private bool _isCommitted;
     private bool _disposedValue;
-    private string? _backupFilePath;
 
     ///
     public TransactionalFileStream(string filePath, FileMode mode)
@@ -47,22 +46,25 @@ public sealed class TransactionalFileStream : FileStream
     {
         if (_isCommitted)
         {
-            _backupFilePath = _originalFilePath + DateTime.Now.ToFileTime() + ".original.tmp";
-            File.Move(_originalFilePath, _backupFilePath);
-            File.Move(_tempFilePath, _originalFilePath);
-            File.Delete(_backupFilePath);
+            var backupFilePath = _originalFilePath + DateTime.Now.ToFileTime() + ".original.tmp";
+            try
+            {
+                File.Move(_originalFilePath, backupFilePath);
+                File.Move(_tempFilePath, _originalFilePath);
+                File.Delete(backupFilePath);
+            }
+            catch (Exception)
+            {
+                if (!File.Exists(_originalFilePath) && File.Exists(backupFilePath))
+                {
+                    File.Move(backupFilePath, _originalFilePath);
+                    File.Delete(backupFilePath);
+                }
+            }
         }
         else
         {
             File.Delete(_tempFilePath);
-            if (_backupFilePath is not null)
-            {
-                if (!File.Exists(_originalFilePath))
-                {
-                    File.Move(_backupFilePath, _originalFilePath);
-                }
-                File.Delete(_backupFilePath);
-            }
         }
     }
 
