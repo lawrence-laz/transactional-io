@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transactional.IO", "src\Tra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transactional.IO.Tests", "test\Transactional.IO.Tests\Transactional.IO.Tests.csproj", "{5C5842DB-E30B-499F-8791-0ED3A465D87B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{1DFEBBA2-E204-4839-A7B2-CA9DA983E5ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlWriterExample", "examples\XmlWriterExample\XmlWriterExample.csproj", "{854E6E43-E3E5-4150-AA54-02C2A2608D20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,12 @@ Global
 		{5C5842DB-E30B-499F-8791-0ED3A465D87B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C5842DB-E30B-499F-8791-0ED3A465D87B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C5842DB-E30B-499F-8791-0ED3A465D87B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{854E6E43-E3E5-4150-AA54-02C2A2608D20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{854E6E43-E3E5-4150-AA54-02C2A2608D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{854E6E43-E3E5-4150-AA54-02C2A2608D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{854E6E43-E3E5-4150-AA54-02C2A2608D20}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{854E6E43-E3E5-4150-AA54-02C2A2608D20} = {1DFEBBA2-E204-4839-A7B2-CA9DA983E5ED}
 	EndGlobalSection
 EndGlobal
