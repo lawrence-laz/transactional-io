@@ -1,6 +1,6 @@
-[![NuGet Version](https://img.shields.io/nuget/v/Transactional.IO?label=NuGet)](https://www.nuget.org/packages/Poem/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/Transactional.IO?label=Downloads)](https://www.nuget.org/packages/Poem/)
-[![Build](https://github.com/lawrence-laz/transactional-io/workflows/Build/badge.svg)](https://github.com/lawrence-laz/poem/actions?query=workflow%3ABuild)
+[![NuGet Version](https://img.shields.io/nuget/v/Transactional.IO?label=NuGet)](https://www.nuget.org/packages/Transactional.IO/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Transactional.IO?label=Downloads)](https://www.nuget.org/packages/Transactional.IO/)
+[![Build](https://github.com/lawrence-laz/transactional-io/workflows/Build/badge.svg)](https://github.com/lawrence-laz/transactional-io/actions?query=workflow%3ABuild)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7ff922b8f755431ea5a1fa59e59c534a)](https://www.codacy.com/gh/lawrence-laz/transactional-io/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=lawrence-laz/transactional-io&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/7ff922b8f755431ea5a1fa59e59c534a)](https://www.codacy.com/gh/lawrence-laz/transactional-io/dashboard?utm_source=github.com&utm_medium=referral&utm_content=lawrence-laz/transactional-io&utm_campaign=Badge_Coverage)
 
