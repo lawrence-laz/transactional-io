@@ -15,7 +15,10 @@ public class FileStreamEquivalencyTests
     [Theory, AutoData]
     public void File_mode_create_new_throws_when_file_already_exists(string fileName)
     {
-        using (File.Create(fileName)) { }
+        using (File.Create(fileName))
+        {
+            // Create a file and close the stream immediately. 
+        }
 
         var fileStreamConstructor = () => new FileStream(fileName, FileMode.CreateNew);
         fileStreamConstructor.Should().ThrowExactly<IOException>();
