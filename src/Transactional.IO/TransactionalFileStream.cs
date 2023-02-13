@@ -62,6 +62,13 @@ public sealed class TransactionalFileStream : FileStream
                 $"'{_originalFilePath}' because it was already committed.");
         }
 
+        if (_disposedValue)
+        {
+            throw new InvalidOperationException(
+                $"Cannot commit the {nameof(TransactionalFileStream)} for " +
+                $"'{_originalFilePath}' because it was already disposed.");
+        }
+
         _isCommitted = true;
     }
 

@@ -107,6 +107,27 @@ public class TransactionalFileStreamTests
         AssertThatTemporaryFilesWereCleanedUp(fileName);
     }
 
+    [Theory, AutoData]
+    public void TransactionalFileStream_throws_when_Commit_is_called_on_disposed_stream(
+        string fileName,
+        string content)
+    {
+        {
+            // Arrange
+            File.WriteAllText(fileName, content);
+            using var fileStream = new TransactionalFileStream(fileName, FileMode.Truncate);
+            fileStream.Dispose();
+
+            // Act & Assert
+            fileStream
+                .Invoking(x => x.Commit())
+                .Should()
+                .Throw<InvalidOperationException>("because cannot commit a closed stream");
+        }
+
+        AssertThatTemporaryFilesWereCleanedUp(fileName);
+    }
+
     private static void AssertThatTemporaryFilesWereCleanedUp(string fileName, int expectedCount = 1)
     {
         Directory.GetFiles(Directory.GetCurrentDirectory(), fileName + "*")
