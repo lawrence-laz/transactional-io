@@ -26,7 +26,7 @@ public sealed class TransactionalFileStream : FileStream
         _mode = mode;
         _originalFilePath = filePath;
         _tempFilePath = tempFilePath;
-        _tempFileStream = new FileStream(_tempFilePath, FileMode.Open);
+        _tempFileStream = this;
     }
 
     private static string CreateTempCopy(
@@ -37,7 +37,7 @@ public sealed class TransactionalFileStream : FileStream
         tempFilePath = $"{filePath}.{Guid.NewGuid()}.tmp";
         if (ShouldCreateIfDoesntExist(mode) && !File.Exists(filePath))
         {
-            using var _ = File.Create(tempFilePath);
+            // There is no original file to copy.
         }
         else
         {
@@ -61,6 +61,7 @@ public sealed class TransactionalFileStream : FileStream
                 $"Cannot commit the {nameof(TransactionalFileStream)} for " +
                 $"'{_originalFilePath}' because it was already committed.");
         }
+
         _isCommitted = true;
     }
 
@@ -110,18 +111,18 @@ public sealed class TransactionalFileStream : FileStream
     /// </summary>
     protected override void Dispose(bool disposing)
     {
+        base.Dispose(disposing);
+
         if (!_disposedValue)
         {
             if (disposing)
             {
                 CompleteTransaction();
-                _tempFileStream.Dispose();
             }
+
             _disposedValue = true;
         }
-        base.Dispose(disposing);
     }
-
 
     private static bool ShouldCreateIfDoesntExist(FileMode mode)
     {
