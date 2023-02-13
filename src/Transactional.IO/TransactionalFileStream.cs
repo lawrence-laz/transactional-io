@@ -8,6 +8,8 @@ namespace Transactional.IO;
 public sealed class TransactionalFileStream : FileStream
 {
     private readonly string _tempFilePath;
+    private readonly bool _didOriginalFileExistOnCreate;
+    private readonly FileMode _mode;
     private readonly string _originalFilePath;
     private readonly FileStream _tempFileStream;
     private bool _isCommitted;
@@ -18,17 +20,30 @@ public sealed class TransactionalFileStream : FileStream
     /// class with the specified path and creation mode.
     /// </summary>
     public TransactionalFileStream(string filePath, FileMode mode)
-        : base(CreateTempCopy(filePath, out var tempFilePath), mode)
+        : base(CreateTempCopy(filePath, out var tempFilePath, mode), mode)
     {
+        _didOriginalFileExistOnCreate = File.Exists(filePath);
+        _mode = mode;
         _originalFilePath = filePath;
         _tempFilePath = tempFilePath;
         _tempFileStream = new FileStream(_tempFilePath, FileMode.Open);
     }
 
-    private static string CreateTempCopy(string filePath, out string tempFilePath)
+    private static string CreateTempCopy(
+        string filePath,
+        out string tempFilePath,
+        FileMode mode)
     {
         tempFilePath = $"{filePath}.{Guid.NewGuid()}.tmp";
-        File.Copy(filePath, tempFilePath);
+        if (ShouldCreateIfDoesntExist(mode) && !File.Exists(filePath))
+        {
+            using var _ = File.Create(tempFilePath);
+        }
+        else
+        {
+            File.Copy(filePath, tempFilePath);
+        }
+
         return tempFilePath;
     }
 
@@ -56,7 +71,15 @@ public sealed class TransactionalFileStream : FileStream
             var backupFilePath = $"{_originalFilePath}.{Guid.NewGuid()}.original.tmp";
             try
             {
-                File.Move(_originalFilePath, backupFilePath);
+                if (ShouldCreateIfDoesntExist(_mode) && !_didOriginalFileExistOnCreate)
+                {
+                    // Since original file did not exist, there is nothing to move.
+                }
+                else
+                {
+                    File.Move(_originalFilePath, backupFilePath);
+                }
+
                 File.Move(_tempFilePath, _originalFilePath);
                 File.Delete(backupFilePath);
             }
@@ -97,6 +120,14 @@ public sealed class TransactionalFileStream : FileStream
             _disposedValue = true;
         }
         base.Dispose(disposing);
+    }
+
+
+    private static bool ShouldCreateIfDoesntExist(FileMode mode)
+    {
+        return mode == FileMode.Append
+            || mode == FileMode.Create
+            || mode == FileMode.OpenOrCreate;
     }
 }
 

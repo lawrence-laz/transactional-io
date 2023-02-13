@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Transactional.IO.Tests;
 
@@ -102,13 +103,61 @@ public class TransactionalFileStreamTests
                 .Should()
                 .Throw<InvalidOperationException>("because .Commit() was called twice");
         }
+
         AssertThatTemporaryFilesWereCleanedUp(fileName);
     }
 
-    private static void AssertThatTemporaryFilesWereCleanedUp(string fileName)
+    private static void AssertThatTemporaryFilesWereCleanedUp(string fileName, int expectedCount = 1)
     {
         Directory.GetFiles(Directory.GetCurrentDirectory(), fileName + "*")
             .Should()
-            .HaveCount(1, "because temporary files are cleaned up");
+            .HaveCount(expectedCount, "because temporary files are cleaned up");
+    }
+
+    [Theory]
+    [InlineAutoData(FileMode.Append)]
+    [InlineAutoData(FileMode.Create)]
+    [InlineAutoData(FileMode.OpenOrCreate)]
+    public async Task TransactionalFileStreamTests_creates_a_new_file_on_commit_for_some_modes(
+        FileMode mode,
+        string fileName,
+        string expected)
+    {
+        {
+            // Arrange
+            using var fileStream = new TransactionalFileStream(fileName, mode);
+            using var writer = new StreamWriter(fileStream);
+
+            // Act
+            await writer.WriteAsync(expected);
+            fileStream.Commit();
+        }
+
+        // Assert
+        File.ReadAllText(fileName).Should().Be(expected);
+        AssertThatTemporaryFilesWereCleanedUp(fileName);
+    }
+
+    [Theory]
+    [InlineAutoData(FileMode.Append)]
+    [InlineAutoData(FileMode.Create)]
+    [InlineAutoData(FileMode.OpenOrCreate)]
+    public async Task TransactionalFileStreamTests_does_not_create_a_new_file_without_commit(
+        FileMode mode,
+        string fileName,
+        string expected)
+    {
+        {
+            // Arrange
+            using var fileStream = new TransactionalFileStream(fileName, mode);
+            using var writer = new StreamWriter(fileStream);
+
+            // Act
+            await writer.WriteAsync(expected);
+        }
+
+        // Assert
+        File.Exists(fileName).Should().BeFalse();
+        AssertThatTemporaryFilesWereCleanedUp(fileName, expectedCount: 0);
     }
 }
