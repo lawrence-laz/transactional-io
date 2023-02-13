@@ -37,8 +37,8 @@ stream.Commit();
 ```
 
 ## 🌟 Features
-- As simple as it gets, no bloated custom APIs
-- Extends standard `System.IO.FileStream`
+  - As simple as it gets, no bloated custom APIs
+  - Extends standard `System.IO.FileStream`
 
 ## 📦️ Get started
 Download from [nuget.org](https://www.nuget.org/packages/Transactional.IO/):
