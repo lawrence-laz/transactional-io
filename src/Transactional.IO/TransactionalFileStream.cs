@@ -100,7 +100,7 @@ public sealed class TransactionalFileStream : FileStream
                 }
 
                 throw new FileStreamCompleteTransactionException(
-                    $"Could not complete the trasaction for the" +
+                    $"Could not complete the transaction for the" +
                     $"{nameof(TransactionalFileStream)} for " +
                     $"'{_originalFilePath}'. See inner exception for details.",
                     exception);
